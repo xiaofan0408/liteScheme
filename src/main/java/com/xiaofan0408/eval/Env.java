@@ -53,6 +53,11 @@ public class Env {
         this.outer = outer;
         this.params = params;
         this.args = args;
+        if (params.length == args.length) {
+            for (int i=0;i< params.length;i++){
+                put(params[i],args[i]);
+            }
+        }
     }
 
     public Env(Env outer) {
@@ -210,6 +215,16 @@ public class Env {
                     return Math.abs(number.doubleValue());
                 }
                 throw new Exception("abs error");
+            }
+        });
+        STANDARD_ENV.put("sqrt", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                if (args.length == 1) {
+                    Number number = (Number)args[0];
+                    return Math.sqrt(number.doubleValue());
+                }
+                throw new Exception("sqrt error");
             }
         });
     }
