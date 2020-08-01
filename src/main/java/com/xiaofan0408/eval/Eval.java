@@ -25,16 +25,22 @@ public class Eval {
         } else if (node.getChildren() == null) {
             return node.getValue();
         } else if ("quote".equals(node.getChildren().get(0).getValue())) {
+            Node dataNode = node.getChildren().get(1);
             List<Object> objectList = new ArrayList<>();
-            objectList.addAll(node.getChildren().get(1).getChildren().stream().map(node1 -> node1.getValue()).collect(Collectors.toList()));
-            return objectList;
+            if (dataNode.getValue() != null) {
+                objectList.add(dataNode.getValue());
+            }
+            if (dataNode.getChildren() != null) {
+                objectList.addAll(dataNode.getChildren().stream().map(node1 -> node1.getValue()).collect(Collectors.toList()));
+            }
+            return objectList.toArray();
         }  else if ("if".equals(node.getChildren().get(0).getValue())) {
             Node testNode = node.getChildren().get(1);
             Node conseq = node.getChildren().get(2);
             Node alt = node.getChildren().get(3);
             Object bool = eval(testNode,env);
             Node exp;
-            if (Boolean.TRUE.equals(bool)) {
+            if (truth(bool)) {
                 exp = conseq;
             } else {
                 exp = alt;
@@ -73,5 +79,27 @@ public class Eval {
             }
             return fn;
         }
+    }
+
+
+    private Boolean truth(boolean x) {
+        return x ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    private Boolean truth(Boolean x) {
+        return x ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    private boolean truth(Object x) {
+        if(x instanceof Object[]){
+            return ((Object[]) x).length > 0;
+        }
+        if (x == null) {
+            return  Boolean.FALSE;
+        }
+        if (x instanceof Boolean) {
+            return (Boolean) x ? Boolean.TRUE : Boolean.FALSE;
+        }
+        return x != Boolean.FALSE;
     }
 }

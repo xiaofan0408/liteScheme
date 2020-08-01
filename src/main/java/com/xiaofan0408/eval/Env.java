@@ -1,6 +1,11 @@
 package com.xiaofan0408.eval;
 
 
+import com.xiaofan0408.util.Util;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,7 +45,7 @@ public class Env {
 //    })
 
 
-    private Map<String,Object> env = new ConcurrentHashMap<>();
+    private Map<String,Object> env = new HashMap<>();
 
     private Env outer;
 
@@ -90,10 +95,8 @@ public class Env {
             @Override
             public Object apply(Object... args) throws Exception {
                 if (args.length == 2) {
-                    Number number = (Number)args[0];
-                    Number number2 = (Number)args[1];
-                    Double d1 = number.doubleValue();
-                    Double d2 = number2.doubleValue();
+                    Double d1 = Util.objectToDouble(args[0]);
+                    Double d2 =  Util.objectToDouble(args[1]);
                     return d1 + d2;
                 }
                 throw new Exception("add error");
@@ -225,6 +228,57 @@ public class Env {
                     return Math.sqrt(number.doubleValue());
                 }
                 throw new Exception("sqrt error");
+            }
+        });
+        STANDARD_ENV.put("car", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                Object[] l = (Object[])args[0];
+                if (l.length > 0) {
+                    return l[0];
+                }
+                return null;
+            }
+        });
+        STANDARD_ENV.put("cdr", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                Object[] l = (Object[])args[0];
+                if (l.length >1) {
+                    return Arrays.copyOfRange(l,1,l.length);
+                }
+               return new Object[0];
+            }
+        });
+        STANDARD_ENV.put("cons", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                if (args.length == 2) {
+                    Object obj = args[0];
+                    Object[] objArray = (Object[]) args[1];
+                    Object[] res = new Object[objArray.length + 1];
+                    res[0] = obj;
+                    for (int i=0;i<objArray.length;i++) {
+                        res[i + 1] = objArray[i];
+                    }
+                    return res;
+                }
+                throw new Exception("cons error");
+            }
+        });
+        STANDARD_ENV.put("list", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                return args;
+            }
+        });
+        STANDARD_ENV.put("equal?", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                if (args.length == 2) {
+                   return args[0].equals(args[1]);
+                }
+                throw new Exception("equal? error");
             }
         });
     }
