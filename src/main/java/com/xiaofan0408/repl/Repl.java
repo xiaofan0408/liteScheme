@@ -10,6 +10,8 @@ import com.xiaofan0408.parser.Parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,7 +35,19 @@ public class Repl {
                 Eval eval = new Eval();
                 Object result = eval.eval(node, Env.STANDARD_ENV);
                 if (result != null) {
-                    System.out.printf(result.toString());
+                    if (result.getClass().isArray()) {
+                        StringBuffer stringBuffer = new StringBuffer();
+                        stringBuffer.append("(");
+                        List<String> stringList = new ArrayList<>();
+                        for (Object object: (Object[])result) {
+                            stringList.add(object.toString());
+                        }
+                        stringBuffer.append(String.join(",",stringList));
+                        stringBuffer.append(")");
+                        System.out.printf(stringBuffer.toString());
+                    } else {
+                        System.out.printf(result.toString());
+                    }
                     System.out.println();
                 }
             } catch (Exception e) {

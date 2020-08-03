@@ -281,5 +281,16 @@ public class Env {
                 throw new Exception("equal? error");
             }
         });
+        STANDARD_ENV.put("pow", new Fn() {
+            @Override
+            public Object apply(Object... args) throws Exception {
+                if (args.length == 2) {
+                    Number number = (Number)args[0];
+                    Number number2 = (Number)args[1];
+                    return Math.pow(number.doubleValue(),number2.doubleValue());
+                }
+                throw new Exception("pow error");
+            }
+        });
     }
 }

@@ -28,7 +28,7 @@ public class Eval {
             Node dataNode = node.getChildren().get(1);
             List<Object> objectList = new ArrayList<>();
             if (dataNode.getValue() != null) {
-                objectList.add(dataNode.getValue());
+                return dataNode.getValue();
             }
             if (dataNode.getChildren() != null) {
                 objectList.addAll(dataNode.getChildren().stream().map(node1 -> node1.getValue()).collect(Collectors.toList()));
@@ -71,8 +71,10 @@ public class Eval {
         } else {
             Object fn = eval(node.getChildren().get(0), env);
             List<Object> args = new ArrayList<>();
-            for (int i = 1;i < node.getChildren().size();i++) {
-                args.add(eval(node.getChildren().get(i),env));
+            if (node.getChildren().size() > 1) {
+                for (int i = 1;i < node.getChildren().size();i++) {
+                    args.add(eval(node.getChildren().get(i),env));
+                }
             }
             if (fn instanceof Fn) {
                 return ((Fn)fn).apply(args.toArray());
